@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from keyboards import main_keyboard
-from database import get_user, add_user, get_points
+from database import get_user, add_user, get_points, get_tasks
 import asyncio
 import os
 from aiohttp import web
@@ -52,7 +52,22 @@ async def tickets(message: Message):
 
 @dp.message(F.text == "📋 المهام")
 async def tasks(message: Message):
-    await message.answer("📋 لا توجد مهام متاحة حاليًا.")
+    tasks_list = get_tasks()
+
+    if not tasks_list:
+        await message.answer("📋 لا توجد مهام متاحة حاليًا.")
+        return
+
+    text = "📋 المهام المتاحة:\n\n"
+
+    for task in tasks_list:
+        text += (
+            f"🔹 {task['title']}\n"
+            f"⭐ المكافأة: {task['points']} نقطة\n"
+            f"🔗 الرابط: {task['url']}\n\n"
+        )
+
+    await message.answer(text)
 
 
 @dp.message(F.text == "🎁 المسابقات")
