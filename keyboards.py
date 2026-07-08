@@ -36,16 +36,3 @@ def task_keyboard(task_id, url):
             ]
         ]
     )
-
-
-def task_keyboard(task_id):
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="🔗 فتح المهمة",
-                    callback_data=f"open_{task_id}"
-                )
-            ]
-        ]
-    )
