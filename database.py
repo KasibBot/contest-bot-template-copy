@@ -108,3 +108,14 @@ def complete_task(telegram_id, task_id, points):
 
 
     return True
+    
+def create_submission(telegram_id, task_id, photo_id, points):
+    data = {
+        "telegram_id": telegram_id,
+        "task_id": task_id,
+        "photo_id": photo_id,
+        "status": "pending",
+        "points": points
+    }
+
+    supabase.table("submissions").insert(data).execute()
