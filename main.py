@@ -59,7 +59,6 @@ async def tasks(message: Message):
     f"⭐ المكافأة: {task['points']} نقطة",
     reply_markup=task_keyboard(task["id"], task["url"])
         )
-        )
 
 
 @dp.callback_query(F.data.startswith("complete_"))
