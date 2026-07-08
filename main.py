@@ -8,7 +8,7 @@ import os
 from aiohttp import web
 
 TOKEN = os.getenv("BOT_TOKEN")
-
+GROUP_ID = int(os.getenv("GROUP_ID"))
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
