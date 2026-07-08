@@ -45,11 +45,6 @@ async def my_points(message: Message):
     )
 
 
-@dp.message(F.text == "🎟️ بطاقات السحب")
-async def tickets(message: Message):
-    await message.answer("🎟️ لا تملك أي بطاقة سحب حتى الآن.")
-
-
 @dp.message(F.text == "📋 المهام")
 async def tasks(message: Message):
     tasks_list = get_tasks()
@@ -68,6 +63,11 @@ async def tasks(message: Message):
         )
 
     await message.answer(text)
+
+
+@dp.message(F.text == "🎟️ بطاقات السحب")
+async def tickets(message: Message):
+    await message.answer("🎟️ لا تملك أي بطاقة سحب حتى الآن.")
 
 
 @dp.message(F.text == "🎁 المسابقات")
@@ -95,46 +95,9 @@ async def support(message: Message):
     await message.answer("📞 تواصل مع الدعم قريبًا.")
 
 
-async def health(request):
-    return web.Response(text="Kasib Bot is running!")
-
-
-async def run_web_server():
-    app = web.Application()
-    app.router.add_get("/", health)
-
-    runner = web.AppRunner(app)
-    await runner.setup()
-
-    site = web.TCPSite(
-        runner,
-        "0.0.0.0",
-        int(os.getenv("PORT", 10000))
-    )
-
-    await site.start()
-
-
 @dp.message(F.text.startswith("✅"))
 async def finish_task(message: Message):
     user_id = message.from_user.id
-
-    tasks_list = get_tasks()
-
-    if not tasks_list:
-        await message.answer("لا توجد مهام متاحة.")
-        return
-
-    # باقي كود المهمة هنا
-
-
-async def main():
-    await run_web_server()
-    await dp.start_polling(bot)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
 
     tasks_list = get_tasks()
 
@@ -159,3 +122,32 @@ if __name__ == "__main__":
         await message.answer(
             "⚠️ لقد أكملت هذه المهمة من قبل."
         )
+
+
+async def health(request):
+    return web.Response(text="Kasib Bot is running!")
+
+
+async def run_web_server():
+    app = web.Application()
+    app.router.add_get("/", health)
+
+    runner = web.AppRunner(app)
+    await runner.setup()
+
+    site = web.TCPSite(
+        runner,
+        "0.0.0.0",
+        int(os.getenv("PORT", 10000))
+    )
+
+    await site.start()
+
+
+async def main():
+    await run_web_server()
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
