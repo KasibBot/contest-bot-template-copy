@@ -33,6 +33,12 @@ def task_keyboard(task_id, url):
                     text="🔗 فتح المهمة",
                     url=url
                 )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="📤 إرسال الإثبات",
+                    callback_data=f"proof_{task_id}"
+                )
             ]
         ]
     )
