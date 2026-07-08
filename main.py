@@ -3,12 +3,11 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from keyboards import main_keyboard, task_keyboard
 from database import get_user, add_user, get_points, get_tasks, complete_task
+from config import TOKEN, ADMIN_ID, GROUP_ID
 import asyncio
 import os
 from aiohttp import web
 
-TOKEN = os.getenv("BOT_TOKEN")
-GROUP_ID = int(os.getenv("GROUP_ID"))
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
