@@ -38,7 +38,11 @@ async def start(message: Message):
 
 @dp.message(F.text == "⭐ نقاطي")
 async def my_points(message: Message):
-    await message.answer("⭐ نقاطك الحالية: 0")
+    points = get_points(message.from_user.id)
+
+    await message.answer(
+        f"⭐ نقاطك الحالية: {points}"
+    )
 
 
 @dp.message(F.text == "🎟️ بطاقات السحب")
