@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from keyboards import main_keyboard
-from database import get_user, add_user, get_points, get_tasks
+from database import get_user, add_user, get_points, get_tasks, complete_task
 import asyncio
 import os
 from aiohttp import web
