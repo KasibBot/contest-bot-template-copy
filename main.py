@@ -57,7 +57,7 @@ async def tasks(message: Message):
         await message.answer(
     f"🔹 {task['title']}\n"
     f"⭐ المكافأة: {task['points']} نقطة",
-    reply_markup=task_keyboard(task["id"])
+    reply_markup=task_keyboard(task["id"], task["url"])
         )
 
 
