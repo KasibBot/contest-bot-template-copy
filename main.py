@@ -1,18 +1,21 @@
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
-from aiogram.types import Message, CallbackQuery
-from keyboards import main_keyboard, task_keyboard
-from database import get_user, add_user, get_points, get_tasks, complete_task
-from config import TOKEN, ADMIN_ID, GROUP_ID
+from aiogram.types import Message
+from keyboards import main_keyboard
+from database import get_user, add_user, get_points
+from config import TOKEN
 from tasks import router as tasks_router
+
 import asyncio
 import os
 from aiohttp import web
+
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 dp.include_router(tasks_router)
+
 
 @dp.message(CommandStart())
 async def start(message: Message):
@@ -46,107 +49,52 @@ async def my_points(message: Message):
     )
 
 
-@dp.message(F.text == "📋 المهام")
-async def tasks(message: Message):
-    tasks_list = get_tasks()
-
-    if not tasks_list:
-        await message.answer("📋 لا توجد مهام متاحة حاليًا.")
-        return
-
-    for task in tasks_list:
-        await message.answer(
-    f"🔹 {task['title']}\n"
-    f"⭐ المكافأة: {task['points']} نقطة",
-    reply_markup=task_keyboard(task["id"], task["url"])
-        )
-
-
-@dp.callback_query(F.data.startswith("complete_"))
-async def complete_task_button(callback: CallbackQuery):
-    user_id = callback.from_user.id
-
-    task_id = int(callback.data.split("_")[1])
-
-    tasks_list = get_tasks()
-
-    task = next(
-        (t for t in tasks_list if t["id"] == task_id),
-        None
-    )
-
-    if not task:
-        await callback.answer("المهمة غير موجودة")
-        return
-
-    result = complete_task(
-        user_id,
-        task_id,
-        task["points"]
-    )
-
-    if result:
-        await callback.message.answer(
-            f"🎉 تم إكمال المهمة!\n"
-            f"⭐ حصلت على {task['points']} نقطة."
-        )
-    else:
-        await callback.message.answer(
-            "⚠️ لقد أكملت هذه المهمة من قبل."
-        )
-
-    await callback.answer()
-
-
 @dp.message(F.text == "🎟️ بطاقات السحب")
 async def tickets(message: Message):
-    await message.answer("🎟️ لا تملك أي بطاقة سحب حتى الآن.")
+    await message.answer(
+        "🎟️ لا تملك أي بطاقة سحب حتى الآن."
+    )
 
 
 @dp.message(F.text == "🎁 المسابقات")
 async def contests(message: Message):
-    await message.answer("🎁 لا توجد مسابقات نشطة حاليًا.")
+    await message.answer(
+        "🎁 لا توجد مسابقات نشطة حاليًا."
+    )
 
 
 @dp.message(F.text == "🏆 المتصدرون")
 async def leaderboard(message: Message):
-    await message.answer("🏆 سيتم عرض المتصدرين هنا.")
+    await message.answer(
+        "🏆 سيتم عرض المتصدرين هنا."
+    )
 
 
 @dp.message(F.text == "👥 دعوة صديق")
 async def invite(message: Message):
-    await message.answer("👥 رابط الدعوة الخاص بك سيظهر هنا.")
+    await message.answer(
+        "👥 رابط الدعوة الخاص بك سيظهر هنا."
+    )
 
 
 @dp.message(F.text == "📜 القوانين")
 async def rules(message: Message):
-    await message.answer("📜 قوانين Kasib ستضاف هنا.")
+    await message.answer(
+        "📜 قوانين Kasib ستضاف هنا."
+    )
 
 
 @dp.message(F.text == "📞 الدعم")
 async def support(message: Message):
-    await message.answer("📞 تواصل مع الدعم قريبًا.")
-
-@dp.message(F.text == "/id")
-async def my_id(message: Message):
     await message.answer(
-        f"🆔 Telegram ID الخاص بك:\n{message.from_user.id}"
-                  )
-   
-@dp.callback_query(F.data.startswith("proof_"))
-async def send_proof(callback: CallbackQuery):
-    task_id = int(callback.data.split("_")[1])
-
-    await callback.message.answer(
-        "📷 أرسل الآن صورة إثبات إتمام المهمة.\n\n"
-        "بعد إرسالها سيتم تحويلها إلى الإدارة للمراجعة."
+        "📞 تواصل مع الدعم قريبًا."
     )
-
-    await callback.answer()
 
 
 async def health(request):
-    return web.Response(text="Kasib Bot is running!")
+    return web.Response(
+        text="Kasib Bot is running!"
+    )
 
 
 async def run_web_server():
@@ -164,9 +112,7 @@ async def run_web_server():
 
     await site.start()
 
-@dp.message()
-async def debug_chat(message: Message):
-    print(f"CHAT_ID = {message.chat.id}")
+
 async def main():
     await run_web_server()
     await dp.start_polling(bot)
