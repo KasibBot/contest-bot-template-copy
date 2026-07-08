@@ -32,3 +32,17 @@ def add_user(user_id, username, first_name):
     }
 
     supabase.table("users").insert(data).execute()
+    
+def get_points(telegram_id):
+    response = (
+        supabase
+        .table("users")
+        .select("points")
+        .eq("telegram_id", telegram_id)
+        .execute()
+    )
+
+    if response.data:
+        return response.data[0]["points"]
+
+    return 0
