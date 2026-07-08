@@ -3,7 +3,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from keyboards import task_keyboard
-from database import get_tasks, complete_task, create_submission
+from database import get_tasks, complete_task
 from config import GROUP_ID
 from states import TaskState
 
