@@ -2,6 +2,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from keyboards import main_keyboard
+from database import get_user, add_user
 import asyncio
 import os
 from aiohttp import web
@@ -14,6 +15,19 @@ dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def start(message: Message):
+    user_id = message.from_user.id
+    username = message.from_user.username
+    first_name = message.from_user.first_name
+
+    user = get_user(user_id)
+
+    if not user:
+        add_user(
+            user_id,
+            username,
+            first_name
+        )
+
     await message.answer(
         "💰 مرحبًا بك في Kasib\n\n"
         "اكسب النقاط، شارك في المسابقات، واربح الجوائز!\n\n"
@@ -44,7 +58,7 @@ async def contests(message: Message):
 
 @dp.message(F.text == "🏆 المتصدرون")
 async def leaderboard(message: Message):
-    await message.answer("🏆 سيتم عرض قائمة المتصدرين هنا.")
+    await message.answer("🏆 سيتم عرض المتصدرين هنا.")
 
 
 @dp.message(F.text == "👥 دعوة صديق")
@@ -54,12 +68,12 @@ async def invite(message: Message):
 
 @dp.message(F.text == "📜 القوانين")
 async def rules(message: Message):
-    await message.answer("📜 قوانين استخدام Kasib ستضاف هنا.")
+    await message.answer("📜 قوانين Kasib ستضاف هنا.")
 
 
 @dp.message(F.text == "📞 الدعم")
 async def support(message: Message):
-    await message.answer("📞 سيتم إضافة معلومات الدعم قريبًا.")
+    await message.answer("📞 تواصل مع الدعم قريبًا.")
 
 
 async def health(request):
@@ -69,13 +83,16 @@ async def health(request):
 async def run_web_server():
     app = web.Application()
     app.router.add_get("/", health)
+
     runner = web.AppRunner(app)
     await runner.setup()
+
     site = web.TCPSite(
         runner,
         "0.0.0.0",
         int(os.getenv("PORT", 10000))
     )
+
     await site.start()
 
 
