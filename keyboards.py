@@ -11,8 +11,27 @@ main_keyboard = ReplyKeyboardMarkup(
 )
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-def task_keyboard(task_id):
+
+def task_keyboard(task_id, url):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🔗 فتح المهمة",
+                    url=url
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="✅ أكملت المهمة",
+                    callback_data=f"complete_{task_id}"
+                )
+            ]
+        ]
+    )
+
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
