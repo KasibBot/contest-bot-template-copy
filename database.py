@@ -27,15 +27,16 @@ def get_user(telegram_id):
     return None
 
 
-def add_user(user_id, username, first_name):
+def add_user(user_id, username, first_name, referrer_id=None):
 
     data = {
-        "telegram_id": user_id,
-        "username": username or "",
-        "first_name": first_name,
-        "points": 0,
-        "tickets": 0,
-        "referrals": 0
+    "telegram_id": user_id,
+    "username": username or "",
+    "first_name": first_name,
+    "points": 0,
+    "tickets": 0,
+    "referrals": 0,
+    "referred_by": referrer_id
     }
 
     supabase.table("users").insert(data).execute()
