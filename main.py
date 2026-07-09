@@ -152,7 +152,29 @@ async def admin_stats(callback):
         f"🤝 نظام الإحالة: مفعل\n"
         f"💰 مكافأة الإحالة: 10 نقاط"
     )
+@dp.callback_query(lambda c: c.data == "show_tasks")
+async def show_tasks(callback):
+    if callback.from_user.id != ADMIN_ID:
+        return
 
+    tasks = supabase.table("tasks").select("*").execute()
+
+    if not tasks.data:
+        await callback.message.answer("📋 لا توجد مهام حاليا")
+        return
+
+    text = "📋 قائمة المهام:\n\n"
+
+    for task in tasks.data:
+        text += (
+            f"🆔 ID: {task['id']}\n"
+            f"📌 العنوان: {task['title']}\n"
+            f"🔗 الرابط: {task['url']}\n"
+            f"💰 النقاط: {task['points']}\n"
+            f"✅ نشطة: {task['active']}\n\n"
+        )
+
+    await callback.message.answer(text)
 @dp.message(F.text == "⭐ نقاطي")
 async def my_points(message: Message):
     points = get_points(message.from_user.id)
