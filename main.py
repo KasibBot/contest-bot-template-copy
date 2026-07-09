@@ -331,7 +331,7 @@ async def exchange_points(message: Message):
 
     await message.answer(
         "🎟️ هل تريد استبدال 1000 نقطة؟",
-        reply_markup=confirm_keyboard
+        reply_markup=exchange_keyboard
     )
 
 @dp.message(F.text == "🎁 المسابقات")
