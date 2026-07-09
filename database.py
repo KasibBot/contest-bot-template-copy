@@ -269,3 +269,27 @@ def add_referral_reward(telegram_id, reward=10):
         "telegram_id",
         telegram_id
     ).execute()
+def set_referred_by(telegram_id, referred_by):
+
+    supabase.table("users").update({
+        "referred_by": referred_by
+    }).eq(
+        "telegram_id",
+        telegram_id
+    ).execute()
+
+
+def get_referred_by(telegram_id):
+
+    response = (
+        supabase
+        .table("users")
+        .select("referred_by")
+        .eq("telegram_id", telegram_id)
+        .execute()
+    )
+
+    if response.data:
+        return response.data[0]["referred_by"]
+
+    return None
