@@ -358,7 +358,15 @@ async def run_draw(callback: CallbackQuery):
     if len(pool) < winners_count:
         winners_count = len(pool)
 
-    winners = random.sample(pool, winners_count)
+    winners = []
+
+while len(winners) < winners_count and pool:
+    winner = random.choice(pool)
+
+    if winner not in winners:
+        winners.append(winner)
+
+    pool = [x for x in pool if x != winner]
 
     text = "🎉 الفائزون:\n\n"
 
