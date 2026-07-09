@@ -108,8 +108,10 @@ def complete_task(telegram_id, task_id, points):
 
 
     return True
-    
+
+
 def create_submission(telegram_id, task_id, photo_id, points):
+
     data = {
         "telegram_id": telegram_id,
         "task_id": task_id,
@@ -118,4 +120,101 @@ def create_submission(telegram_id, task_id, photo_id, points):
         "points": points
     }
 
-    supabase.table("submissions").insert(data).execute()
+    response = (
+        supabase
+        .table("submissions")
+        .insert(data)
+        .execute()
+    )
+
+    if response.data:
+        return response.data[0]["id"]
+
+    return None
+
+
+
+# جلب إثبات من الإدارة
+def get_submission(submission_id):
+
+    response = (
+        supabase
+        .table("submissions")
+        .select("*")
+        .eq("id", submission_id)
+        .execute()
+    )
+
+    if response.data:
+        return response.data[0]
+
+    return None
+
+
+
+# قبول الإثبات وإضافة النقاط
+def approve_submission(submission_id):
+
+    submission = get_submission(submission_id)
+
+    if not submission:
+        return False
+
+    if submission["status"] != "pending":
+        return False
+
+
+    user = (
+        supabase
+        .table("users")
+        .select("points")
+        .eq("telegram_id", submission["telegram_id"])
+        .execute()
+    )
+
+
+    if user.data:
+
+        current_points = user.data[0]["points"]
+
+        supabase.table("users").update({
+            "points": current_points + submission["points"]
+        }).eq(
+            "telegram_id",
+            submission["telegram_id"]
+        ).execute()
+
+
+    supabase.table("submissions").update({
+        "status": "approved"
+    }).eq(
+        "id",
+        submission_id
+    ).execute()
+
+
+    return submission
+
+
+
+# رفض الإثبات
+def reject_submission(submission_id):
+
+    submission = get_submission(submission_id)
+
+    if not submission:
+        return False
+
+    if submission["status"] != "pending":
+        return False
+
+
+    supabase.table("submissions").update({
+        "status": "rejected"
+    }).eq(
+        "id",
+        submission_id
+    ).execute()
+
+
+    return submission
