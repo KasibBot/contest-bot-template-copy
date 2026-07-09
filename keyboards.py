@@ -42,3 +42,18 @@ def task_keyboard(task_id, url):
             ]
         ]
     )
+def review_keyboard(submission_id):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ قبول",
+                    callback_data=f"approve_{submission_id}"
+                ),
+                InlineKeyboardButton(
+                    text="❌ رفض",
+                    callback_data=f"reject_{submission_id}"
+                )
+            ]
+        ]
+    )
