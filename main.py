@@ -31,6 +31,7 @@ ADMIN_ID = 1924476173
 class AdminTaskState(StatesGroup):
     waiting_for_title = State()
     waiting_for_url = State()
+    waiting_for_points = State()
     
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -217,17 +218,28 @@ async def get_task_title(message: Message, state: FSMContext):
 
 @dp.message(AdminTaskState.waiting_for_url)
 async def get_task_url(message: Message, state: FSMContext):
+    await state.update_data(url=message.text)
+
+    await message.answer("💰 أرسل عدد نقاط المهمة:")
+    await state.set_state(AdminTaskState.waiting_for_points)
+@dp.message(AdminTaskState.waiting_for_points)
+async def get_task_points(message: Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("❌ أرسل رقمًا صحيحًا فقط.")
+        return
+
     data = await state.get_data()
 
     supabase.table("tasks").insert({
         "title": data["title"],
-        "url": message.text,
-        "points": 10,
+        "url": data["url"],
+        "points": int(message.text),
         "active": True
     }).execute()
 
-    await message.answer("✅ تم إضافة المهمة بنجاح")
+    await message.answer("✅ تم إضافة المهمة بنجاح.")
     await state.clear()
+
 
 
 @dp.callback_query(lambda c: c.data == "delete_task")
