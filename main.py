@@ -63,6 +63,12 @@ admin_keyboard = InlineKeyboardMarkup(
             )
         ],
         [
+    InlineKeyboardButton(
+        text="🎲 إجراء السحب",
+        callback_data="run_draw"
+            )
+        ],
+        [
             InlineKeyboardButton(
                 text="❌ حذف مهمة",
                 callback_data="delete_task"
