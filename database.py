@@ -294,3 +294,36 @@ def get_referred_by(telegram_id):
         return response.data[0]["referred_by"]
 
     return None
+def add_points(telegram_id, points):
+    user = (
+        supabase
+        .table("users")
+        .select("points")
+        .eq("telegram_id", telegram_id)
+        .execute()
+    )
+
+    if not user.data:
+        return False
+
+    current_points = user.data[0]["points"]
+
+    supabase.table("users").update({
+        "points": current_points + points
+    }).eq(
+        "telegram_id",
+        telegram_id
+    ).execute()
+
+    return True
+
+
+def get_users_count():
+    response = (
+        supabase
+        .table("users")
+        .select("telegram_id")
+        .execute()
+    )
+
+    return len(response.data)
