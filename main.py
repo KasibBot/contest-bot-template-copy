@@ -295,7 +295,35 @@ async def tickets(message: Message):
     await message.answer(
         "🎟️ لا تملك أي بطاقة سحب حتى الآن."
     )
+@dp.message(F.text == "🎟️ استبدال النقاط")
+async def exchange_points(message: Message):
+    user = supabase.table("users").select("points").eq("user_id", message.from_user.id).execute()
 
+    if not user.data:
+        await message.answer("❌ لم يتم العثور على بياناتك.")
+        return
+
+    points = user.data[0]["points"]
+
+    if points < 1000:
+        await message.answer(
+            f"❌ تحتاج إلى 1000 نقطة للحصول على بطاقة سحب.\n\n"
+            f"⭐ نقاطك الحالية: {points}\n"
+            f"📈 المتبقي: {1000 - points} نقطة."
+        )
+        return
+
+    tickets = points // 1000
+    remaining = points % 1000
+
+    await message.answer(
+        f"🎟️ يمكنك استبدال:\n\n"
+        f"⭐ {points} نقطة\n"
+        f"⬇️\n"
+        f"🎫 {tickets} بطاقة سحب\n\n"
+        f"⭐ النقاط التي ستتبقى بعد الاستبدال: {remaining}\n\n"
+        f"⚠️ في الخطوة التالية سنضيف زر (✅ تأكيد) لتنفيذ الاستبدال."
+    )
 
 @dp.message(F.text == "🎁 المسابقات")
 async def contests(message: Message):
