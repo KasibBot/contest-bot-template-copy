@@ -6,7 +6,11 @@ from database import (
     get_user,
     add_user,
     get_points,
-    get_leaderboard
+    get_leaderboard,
+    get_referrals,
+    add_referral_reward,
+    set_referred_by,
+    get_referred_by
 )
 from config import TOKEN
 from tasks import router as tasks_router
