@@ -3,7 +3,7 @@ from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
-from keyboards import task_keyboard
+from keyboards import task_keyboard, review_keyboard
 from database import (
     get_tasks,
     complete_task,
@@ -125,15 +125,16 @@ async def receive_proof(
     )
 
     await bot.send_photo(
-        chat_id=GROUP_ID,
-        photo=photo_id,
-        caption=(
-            "📥 إثبات جديد\n\n"
-            f"👤 المستخدم: {message.from_user.full_name}\n"
-            f"🆔 Telegram ID: {message.from_user.id}\n"
-            f"📋 المهمة: {task['title']}\n"
-            f"⭐ النقاط: {task['points']}"
-        )
+    chat_id=GROUP_ID,
+    photo=photo_id,
+    caption=(
+        "📥 إثبات جديد\n\n"
+        f"👤 المستخدم: {message.from_user.full_name}\n"
+        f"🆔 Telegram ID: {message.from_user.id}\n"
+        f"📋 المهمة: {task['title']}\n"
+        f"⭐ النقاط: {task['points']}"
+    ),
+    reply_markup=review_keyboard(1)
     )
 
     await message.answer(
