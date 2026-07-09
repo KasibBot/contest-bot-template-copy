@@ -27,6 +27,10 @@ from aiohttp import web
 
 ADMIN_ID = 1924476173
 
+class AdminTaskState(StatesGroup):
+    waiting_for_title = State()
+    waiting_for_url = State()
+    
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
@@ -191,8 +195,28 @@ async def add_task_start(callback: CallbackQuery, state: FSMContext):
     )
 
     await state.set_state(AdminTaskState.waiting_for_title)
+@dp.message(AdminTaskState.waiting_for_title)
+async def get_task_title(message: Message, state: FSMContext):
+    await state.update_data(title=message.text)
 
+    await message.answer("🔗 أرسل رابط المهمة:")
 
+    await state.set_state(AdminTaskState.waiting_for_url)
+@dp.message(AdminTaskState.waiting_for_url)
+async def get_task_url(message: Message, state: FSMContext):
+    data = await state.get_data()
+
+    supabase.table("tasks").insert({
+        "title": data["title"],
+        "url": message.text,
+        "points": 10,
+        "active": True
+    }).execute()
+
+    await message.answer("✅ تم إضافة المهمة بنجاح")
+
+    await state.clear()
+    
 @dp.message(F.text == "⭐ نقاطي")
 async def my_points(message: Message):
     points = get_points(message.from_user.id)
