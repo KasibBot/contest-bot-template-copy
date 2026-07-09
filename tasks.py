@@ -146,13 +146,13 @@ async def receive_proof(
     tasks_list = get_tasks()
 
 
-    task = next(
+        task = next(
         (t for t in tasks_list if t["id"] == task_id),
         None
     )
 
 
-        if not task:
+    if not task:
 
         await message.answer(
             "❌ المهمة غير موجودة."
