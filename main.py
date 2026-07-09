@@ -16,6 +16,7 @@ from database import (
 )
 from config import TOKEN
 from tasks import router as tasks_router
+from database import supabase
 
 import asyncio
 import os
