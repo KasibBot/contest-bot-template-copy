@@ -229,6 +229,12 @@ async def get_task_url(message: Message, state: FSMContext):
     await message.answer("✅ تم إضافة المهمة بنجاح")
 
     await state.clear()
+ @dp.callback_query(lambda c: c.data == "delete_task")
+async def delete_task_menu(callback: CallbackQuery):
+    ...   
+    @dp.callback_query(lambda c: c.data.startswith("del_"))
+async def delete_task(callback: CallbackQuery):
+    ...
     
 @dp.message(F.text == "⭐ نقاطي")
 async def my_points(message: Message):
