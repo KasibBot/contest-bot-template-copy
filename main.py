@@ -330,13 +330,13 @@ async def exchange_points(message: Message):
     remaining = points % 1000
 
     await message.answer(
-        f"🎟️ يمكنك استبدال:\n\n"
-        f"⭐ {points} نقطة\n"
-        f"⬇️\n"
-        f"🎫 {tickets} بطاقة سحب\n\n"
-        f"⭐ النقاط التي ستتبقى بعد الاستبدال: {remaining}\n\n"
-        f"⚠️ في الخطوة التالية سنضيف زر (✅ تأكيد) لتنفيذ الاستبدال."
-        reply_markup=exchange_keyboard
+    f"🎟️ يمكنك استبدال:\n\n"
+    f"⭐ {points} نقطة\n"
+    f"⬇️\n"
+    f"🎫 {tickets} بطاقة سحب\n\n"
+    f"⭐ النقاط التي ستتبقى بعد الاستبدال: {remaining}\n\n"
+    f"هل تريد تأكيد عملية الاستبدال؟",
+    reply_markup=exchange_keyboard
     )
 
 @dp.message(F.text == "🎁 المسابقات")
