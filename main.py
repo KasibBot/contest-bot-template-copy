@@ -64,6 +64,12 @@ admin_keyboard = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(
+                text="🏆 إنشاء مسابقة",
+                callback_data="create_contest"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 text="🗑 حذف مهمة",
                 callback_data="delete_task"
             )
@@ -220,11 +226,10 @@ async def get_task_title(message: Message, state: FSMContext):
     await message.answer("🔗 أرسل رابط المهمة:")
     await state.set_state(AdminTaskState.waiting_for_url)
 
-
 @dp.message(AdminTaskState.waiting_for_url)
 async def get_task_url(message: Message, state: FSMContext):
+    
     await state.update_data(url=message.text)
-
     await message.answer("💰 أرسل عدد نقاط المهمة:")
     await state.set_state(AdminTaskState.waiting_for_points)
 @dp.message(AdminTaskState.waiting_for_points)
@@ -241,6 +246,14 @@ async def get_task_points(message: Message, state: FSMContext):
         "points": int(message.text),
         "active": True
     }).execute()
+    
+    @dp.callback_query(lambda c: c.data == "create_contest")
+async def create_contest_start(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return
+
+    await callback.message.answer("🏆 أرسل اسم المسابقة:")
+    await state.set_state(ContestState.waiting_for_title)
 
     await message.answer("✅ تم إضافة المهمة بنجاح.")
     await state.clear()
