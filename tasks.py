@@ -152,7 +152,143 @@ async def receive_proof(
     )
 
 
-    if not task:
+        if not task:
 
         await message.answer(
-            "❌
+            "❌ المهمة غير موجودة."
+        )
+
+        await state.clear()
+
+        return
+
+
+
+    photo_id = message.photo[-1].file_id
+
+
+    submission_id = create_submission(
+        message.from_user.id,
+        task_id,
+        photo_id,
+        task["points"]
+    )
+
+
+    await bot.send_photo(
+
+        chat_id=GROUP_ID,
+
+        photo=photo_id,
+
+        caption=(
+
+            "📥 إثبات جديد\n\n"
+            f"👤 المستخدم: {message.from_user.full_name}\n"
+            f"🆔 Telegram ID: {message.from_user.id}\n"
+            f"📋 المهمة: {task['title']}\n"
+            f"⭐ النقاط: {task['points']}"
+
+        ),
+
+        reply_markup=review_keyboard(
+            submission_id
+        )
+
+    )
+
+
+    await message.answer(
+        "✅ تم استلام صورة الإثبات.\n"
+        "سيتم مراجعتها من قبل الإدارة."
+    )
+
+
+    await state.clear()
+# قبول الإثبات
+@router.callback_query(
+    F.data.startswith("approve_")
+)
+async def approve_button(
+    callback: CallbackQuery,
+    bot: Bot
+):
+
+    submission_id = int(
+        callback.data.split("_")[1]
+    )
+
+
+    submission = approve_submission(
+        submission_id
+    )
+
+
+    if not submission:
+        await callback.answer(
+            "تمت معالجة الطلب مسبقًا."
+        )
+        return
+
+
+    await bot.send_message(
+        submission["telegram_id"],
+        "✅ تم قبول إثباتك!\n"
+        f"⭐ حصلت على {submission['points']} نقطة."
+    )
+
+
+    await callback.message.edit_caption(
+        callback.message.caption +
+        "\n\n✅ تم القبول"
+    )
+
+
+    await callback.answer(
+        "تم قبول الطلب"
+    )
+
+
+
+# رفض الإثبات
+@router.callback_query(
+    F.data.startswith("reject_")
+)
+async def reject_button(
+    callback: CallbackQuery,
+    bot: Bot
+):
+
+    submission_id = int(
+        callback.data.split("_")[1]
+    )
+
+
+    submission = reject_submission(
+        submission_id
+    )
+
+
+    if not submission:
+        await callback.answer(
+            "تمت معالجة الطلب مسبقًا."
+        )
+        return
+
+
+    await bot.send_message(
+        submission["telegram_id"],
+        "❌ تم رفض إثباتك.\n"
+        "يمكنك المحاولة مرة أخرى."
+    )
+
+
+    await callback.message.edit_caption(
+        callback.message.caption +
+        "\n\n❌ تم الرفض"
+    )
+
+
+    await callback.answer(
+        "تم رفض الطلب"
+)
