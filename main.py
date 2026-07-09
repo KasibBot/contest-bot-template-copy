@@ -203,18 +203,18 @@ async def add_task_start(callback: CallbackQuery, state: FSMContext):
     if callback.from_user.id != ADMIN_ID:
         return
 
-    await callback.message.answer(
-        "📌 أرسل عنوان المهمة:"
-    )
-
+    await callback.message.answer("📌 أرسل عنوان المهمة:")
     await state.set_state(AdminTaskState.waiting_for_title)
+
+
 @dp.message(AdminTaskState.waiting_for_title)
 async def get_task_title(message: Message, state: FSMContext):
     await state.update_data(title=message.text)
 
     await message.answer("🔗 أرسل رابط المهمة:")
-
     await state.set_state(AdminTaskState.waiting_for_url)
+
+
 @dp.message(AdminTaskState.waiting_for_url)
 async def get_task_url(message: Message, state: FSMContext):
     data = await state.get_data()
@@ -227,15 +227,48 @@ async def get_task_url(message: Message, state: FSMContext):
     }).execute()
 
     await message.answer("✅ تم إضافة المهمة بنجاح")
-
     await state.clear()
- @dp.callback_query(lambda c: c.data == "delete_task")
+
+
+@dp.callback_query(lambda c: c.data == "delete_task")
 async def delete_task_menu(callback: CallbackQuery):
-    ...   
-    @dp.callback_query(lambda c: c.data.startswith("del_"))
+    if callback.from_user.id != ADMIN_ID:
+        return
+
+    tasks = supabase.table("tasks").select("*").eq("active", True).execute()
+
+    if not tasks.data:
+        await callback.message.answer("❌ لا توجد مهام.")
+        return
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[])
+
+    for task in tasks.data:
+        keyboard.inline_keyboard.append([
+            InlineKeyboardButton(
+                text=task["title"],
+                callback_data=f"del_{task['id']}"
+            )
+        ])
+
+    await callback.message.answer(
+        "🗑 اختر المهمة التي تريد حذفها:",
+        reply_markup=keyboard
+    )
+
+
+@dp.callback_query(lambda c: c.data.startswith("del_"))
 async def delete_task(callback: CallbackQuery):
-    ...
-    
+    if callback.from_user.id != ADMIN_ID:
+        return
+
+    task_id = int(callback.data.replace("del_", ""))
+
+    supabase.table("tasks").delete().eq("id", task_id).execute()
+
+    await callback.message.edit_text("✅ تم حذف المهمة بنجاح.")
+
+
 @dp.message(F.text == "⭐ نقاطي")
 async def my_points(message: Message):
     points = get_points(message.from_user.id)
