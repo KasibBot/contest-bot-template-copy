@@ -608,6 +608,8 @@ async def run_web_server():
 
 
 async def main():
+    print("Bot started successfully")
+
     await run_web_server()
     await dp.start_polling(bot)
 
