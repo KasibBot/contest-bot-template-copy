@@ -36,6 +36,9 @@ class AdminTaskState(StatesGroup):
 
 class SupportState(StatesGroup):
     waiting_for_message = State()
+
+class ReplyState(StatesGroup):
+    waiting_for_reply = State()
     
 class ContestState(StatesGroup):
     waiting_for_title = State()
@@ -634,6 +637,20 @@ async def receive_support_message(message: Message, state: FSMContext):
 
     await state.clear()
 
+
+@dp.callback_query(F.data.startswith("reply_"))
+async def reply_button(callback: CallbackQuery, state: FSMContext):
+    user_id = int(callback.data.split("_")[1])
+
+    await state.update_data(reply_user_id=user_id)
+
+    await callback.message.answer(
+        "✍️ اكتب الآن الرد الذي تريد إرساله إلى المستخدم:"
+    )
+
+    await state.set_state(ReplyState.waiting_for_reply)
+    await callback.answer()
+    
 
 async def health(request):
     return web.Response(
