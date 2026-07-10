@@ -337,7 +337,7 @@ async def run_draw(callback: CallbackQuery):
     c = contest.data[0]
 
     users = supabase.table("users") \
-        ..select("telegram_id, username, tickets") \
+        .select("telegram_id, username, tickets") \
         .gt("tickets", 0) \
         .execute()
 
