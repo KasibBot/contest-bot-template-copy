@@ -349,14 +349,14 @@ async def run_draw(callback: CallbackQuery):
 
     pool = []
 
-for user in users.data:
-    for _ in range(user["tickets"]):
-        pool.append({
-            "telegram_id": user["telegram_id"],
-            "username": user["username"]
-        })
+    for user in users.data:
+        for _ in range(user["tickets"]):
+            pool.append({
+                "telegram_id": user["telegram_id"],
+                "username": user["username"]
+            })
 
-        winners_count = c["winners_count"]
+    winners_count = c["winners_count"]
 
     if len(pool) < winners_count:
         winners_count = len(pool)
@@ -373,7 +373,7 @@ for user in users.data:
 
     text = "🎉 الفائزون:\n\n"
 
-         for i, winner in enumerate(winners, start=1):
+    for i, winner in enumerate(winners, start=1):
         name = f"@{winner['username']}" if winner["username"] else str(winner["telegram_id"])
 
         text += f"{i}- {name}\n"
