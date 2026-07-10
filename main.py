@@ -581,11 +581,18 @@ async def main():
     print("1- Starting web server")
     await run_web_server()
 
-    print("2- Deleting webhook")
-    await bot.delete_webhook(drop_pending_updates=True)
+    while True:
+        try:
+            print("2- Deleting webhook")
+            await bot.delete_webhook(drop_pending_updates=True)
 
-    print("3- Starting polling")
-    await dp.start_polling(bot)
+            print("3- Starting polling")
+            await dp.start_polling(bot)
+
+        except Exception as e:
+            print(f"Polling stopped بسبب خطأ: {e}")
+            print("إعادة التشغيل بعد 5 ثوان...")
+            await asyncio.sleep(5)
 
 
 if __name__ == "__main__":
