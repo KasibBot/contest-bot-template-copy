@@ -337,7 +337,7 @@ async def run_draw(callback: CallbackQuery):
     c = contest.data[0]
 
     users = supabase.table("users") \
-        .select("telegram_id, tickets") \
+        ..select("telegram_id, username, tickets") \
         .gt("tickets", 0) \
         .execute()
 
@@ -349,9 +349,12 @@ async def run_draw(callback: CallbackQuery):
 
     pool = []
 
-    for user in users.data:
-        for _ in range(user["tickets"]):
-            pool.append(user["telegram_id"])
+for user in users.data:
+    for _ in range(user["tickets"]):
+        pool.append({
+            "telegram_id": user["telegram_id"],
+            "username": user["username"]
+        })
 
         winners_count = c["winners_count"]
 
@@ -371,11 +374,12 @@ async def run_draw(callback: CallbackQuery):
     text = "🎉 الفائزون:\n\n"
 
     for i, winner in enumerate(winners, start=1):
-        text += f"{i}- {winner}\n"
+        name = f"@{winner['username']}" if winner["username"] else str(winner["telegram_id"])
+text += f"{i}- {name}\n"
 
         await bot.send_message(
-            winner,
-            "🎉 مبروك! لقد فزت في المسابقة!"
+    winner["telegram_id"],
+    "🎉 مبروك! لقد فزت في المسابقة!"
         )
 
     await callback.message.answer(text)
