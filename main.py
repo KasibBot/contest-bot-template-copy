@@ -44,6 +44,9 @@ class ContestState(StatesGroup):
     waiting_for_title = State()
     waiting_for_prize = State()
     waiting_for_winners = State()    
+
+class JoinContestState(StatesGroup):
+    waiting_for_tickets = State()
     
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
