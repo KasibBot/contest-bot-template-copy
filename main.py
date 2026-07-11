@@ -346,24 +346,24 @@ async def run_draw(callback: CallbackQuery):
 
     c = contest.data[0]
 
-    users = supabase.table("users") \
-    .select("telegram_id, username, tickets") \
-    .gt("tickets", 0) \
+    entries = supabase.table("contest_entries") \
+    .select("*") \
+    .eq("contest_id", c["id"]) \
     .execute()
 
-if not users.data:
-    await callback.message.answer("❌ لا يوجد مشاركون.")
+if not entries.data:
+    await callback.message.answer("❌ لا يوجد مشاركون في هذه المسابقة.")
     return
 
 import random
 
 pool = []
 
-for user in users.data:
-    for _ in range(user["tickets"]):
+for entry in entries.data:
+    for _ in range(entry["tickets_used"]):
         pool.append({
-            "telegram_id": user["telegram_id"],
-            "username": user["username"]
+            "telegram_id": entry["user_id"],
+            "username": entry["username"]
         })
 
     winners_count = c["winners_count"]
