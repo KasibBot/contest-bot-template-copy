@@ -652,6 +652,20 @@ async def reply_button(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     
 
+@dp.message(ReplyState.waiting_for_reply)
+async def send_reply(message: Message, state: FSMContext):
+    data = await state.get_data()
+    user_id = data["reply_user_id"]
+
+    await bot.send_message(
+        user_id,
+        f"📩 رد من الدعم:\n\n{message.text}"
+    )
+
+    await message.answer("✅ تم إرسال الرد إلى المستخدم.")
+
+    await state.clear()
+    
 async def health(request):
     return web.Response(
         text="Kasib Bot is running!"
