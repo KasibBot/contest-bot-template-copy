@@ -455,8 +455,7 @@ async def run_draw(callback: CallbackQuery):
         await bot.send_message(
             winner["telegram_id"],
             "🎉 مبروك! لقد فزت في المسابقة!"
-        )
-        
+        )  
      group_name = f"@{winner['username']}" if winner["username"] else str(winner["telegram_id"])
 
 await bot.send_message(
