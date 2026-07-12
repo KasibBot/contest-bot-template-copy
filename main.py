@@ -447,6 +447,7 @@ async def run_draw(callback: CallbackQuery):
         pool = [x for x in pool if x != winner]
 
     text = "🎉 الفائزون:\n\n"
+
     for i, winner in enumerate(winners, start=1):
         name = f"@{winner['username']}" if winner["username"] else str(winner["telegram_id"])
 
@@ -457,7 +458,7 @@ async def run_draw(callback: CallbackQuery):
             "🎉 مبروك! لقد فزت في المسابقة!"
         )
 
-        group_name = f"@{winner['username']}" if winner["username"] else str(winner["telegram_id"])
+        group_name = name
 
         try:
             await bot.send_message(
@@ -482,6 +483,25 @@ async def run_draw(callback: CallbackQuery):
     supabase.table("users") \
         .update({"tickets": 0}) \
         .gt("tickets", 0) \
+        .execute()
+
+    if not entries.data:
+        await callback.message.answer("❌ لا يوجد مشاركون في هذه المسابقة.")
+        return
+
+    import random
+
+    pool = []
+
+    for entry in entries.data:
+        for _ in range(entry["tickets_used"]):
+            pool.append({
+                "telegram_id": entry["user_id"],
+                "username": entry["username"]
+            })
+
+    winners_count =  
+             
         .execute()
     
 @dp.message(F.text == "⭐ نقاطي")
