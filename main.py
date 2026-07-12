@@ -446,8 +446,7 @@ async def run_draw(callback: CallbackQuery):
         pool = [x for x in pool if x != winner]
 
     text = "🎉 الفائزون:\n\n"
-
-        for i, winner in enumerate(winners, start=1):
+    for i, winner in enumerate(winners, start=1):
         name = f"@{winner['username']}" if winner["username"] else str(winner["telegram_id"])
 
         text += f"{i}- {name}\n"
