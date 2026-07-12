@@ -420,25 +420,6 @@ async def run_draw(callback: CallbackQuery):
         .update({"tickets": 0}) \
         .gt("tickets", 0) \
         .execute()
-
-    if not entries.data:
-        await callback.message.answer("❌ لا يوجد مشاركون في هذه المسابقة.")
-        return
-
-    import random
-
-    pool = []
-
-    for entry in entries.data:
-        for _ in range(entry["tickets_used"]):
-            pool.append({
-                "telegram_id": entry["user_id"],
-                "username": entry["username"]
-            })
-
-    winners_count =  
-             
-        .execute()
     
 @dp.message(F.text == "⭐ نقاطي")
 async def my_points(message: Message):
