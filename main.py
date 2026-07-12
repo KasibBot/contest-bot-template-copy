@@ -407,13 +407,12 @@ async def run_draw(callback: CallbackQuery):
 مبروك للفائز! 🎊"""
             )
             print("تم إرسال الرسالة إلى المجموعة بنجاح")
-        except Exception as e:
+                except Exception as e:
             print(f"خطأ إرسال للمجموعة: {e}")
 
-                await callback.message.answer(text)
+    await callback.message.answer(text)
 
-    result =
-supabase.table("contests").update({
+    result = supabase.table("contests").update({
         "status": "finished"
     }).eq("id", c["id"]).execute()
 
