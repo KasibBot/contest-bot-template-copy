@@ -459,15 +459,19 @@ async def run_draw(callback: CallbackQuery):
 
         group_name = f"@{winner['username']}" if winner["username"] else str(winner["telegram_id"])
 
-        await bot.send_message(
-            RESULTS_GROUP_ID,
-            f"""🏆 تم إعلان نتيجة المسابقة
+        try:
+    await bot.send_message(
+        RESULTS_GROUP_ID,
+        f"""🏆 تم إعلان نتيجة المسابقة
 
 🎉 الفائز رقم {i}: {group_name}
 🎁 الجائزة: {c['prize']}
 
 مبروك للفائز! 🎊"""
-        )
+    )
+    print("تم إرسال الرسالة إلى المجموعة بنجاح")
+except Exception as e:
+    print(f"خطأ إرسال للمجموعة: {repr(e)}")
 
     await callback.message.answer(text)
 
