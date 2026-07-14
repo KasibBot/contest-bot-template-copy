@@ -125,13 +125,14 @@ async def start(message: Message):
         )
 
         if referrer_id and referrer_id != user_id:
-            add_points(referrer_id, 10)
+            add_points(referrer_id, REFERRAL_REWARD)
 
     await message.answer(
-        "💰 مرحبًا بك في Kasib\n\n"
-        "اكسب النقاط، شارك في المسابقات، واربح الجوائز!\n\n"
-        "اختر أحد الخيارات من القائمة 👇",
-        reply_markup=main_keyboard
+    f"💰 مرحبًا بك في {BOT_NAME}!\n\n"
+    "🎯 اكسب النقاط من خلال المهام والمشاركة في المسابقات.\n"
+    "🏆 اجمع النقاط واستبدلها بجوائز قيمة.\n\n"
+    "👇 اختر أحد الخيارات من القائمة:",
+    reply_markup=main_keyboard
     )
 
 @dp.message(Command("admin"))
@@ -163,10 +164,10 @@ async def admin_stats(callback):
     count = get_users_count()
 
     await callback.message.answer(
-        f"📊 الإحصائيات:\n\n"
-        f"👥 عدد المستخدمين: {count}\n"
-        f"🤝 نظام الإحالة: مفعل\n"
-        f"💰 مكافأة الإحالة: 10 نقاط"
+    f"📊 الإحصائيات:\n\n"
+    f"👥 عدد المستخدمين: {count}\n"
+    f"🤝 نظام الإحالة: مفعل\n"
+    f"💰 مكافأة الإحالة: {REFERRAL_REWARD} نقاط"
     )
 @dp.callback_query(lambda c: c.data == "show_tasks")
 async def show_tasks(callback):
@@ -566,7 +567,7 @@ async def exchange_points(message: Message):
 
     points = user.data[0]["points"]
 
-    if points < 1000:
+    if points < EXCHANGE_COST:
         await message.answer(
             f"❌ لا تملك نقاط كافية.\n"
             f"رصيدك: {points} نقطة\n"
