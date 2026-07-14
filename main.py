@@ -19,6 +19,9 @@ from config import (
     ADMIN_ID,
     SUPPORT_CHAT_ID,
     RESULTS_GROUP_ID,
+    BOT_NAME,
+    REFERRAL_REWARD,
+    EXCHANGE_COST,
 )
 from tasks import router as tasks_router
 from database import supabase
