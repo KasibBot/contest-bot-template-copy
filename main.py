@@ -14,7 +14,12 @@ from database import (
     get_users_count,
     add_points
 )
-from config import TOKEN
+from config import (
+    TOKEN,
+    ADMIN_ID,
+    SUPPORT_CHAT_ID,
+    RESULTS_GROUP_ID,
+)
 from tasks import router as tasks_router
 from database import supabase
 from aiogram.fsm.context import FSMContext
@@ -25,10 +30,6 @@ import asyncio
 import os
 from aiohttp import web
 from aiogram.fsm.state import State, StatesGroup
-
-ADMIN_ID = 1924476173
-SUPPORT_CHAT_ID = -1004469291192
-RESULTS_GROUP_ID = -5353973031
 
 class AdminTaskState(StatesGroup):
     waiting_for_title = State()
