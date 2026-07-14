@@ -31,11 +31,6 @@ import os
 from aiohttp import web
 from aiogram.fsm.state import State, StatesGroup
 
-class AdminTaskState(StatesGroup):
-    waiting_for_title = State()
-    waiting_for_url = State()
-    waiting_for_points = State()
-
 class SupportState(StatesGroup):
     waiting_for_message = State()
 
