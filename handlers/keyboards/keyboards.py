@@ -1,330 +1,65 @@
-import os
-from supabase import create_client
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-
-
-supabase = create_client(
-    SUPABASE_URL,
-    SUPABASE_KEY
+main_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="⭐ نقاطي"),
+            KeyboardButton(text="📋 المهام")
+        ],
+        [
+            KeyboardButton(text="🎟️ استبدال النقاط"),
+            KeyboardButton(text="🎟️ بطاقات السحب")
+        ],
+        [
+            KeyboardButton(text="🎟️ المشاركة في السحب")
+        ],
+        [
+            KeyboardButton(text="🎁 المسابقات"),
+            KeyboardButton(text="👥 دعوة صديق")
+        ],
+        [
+            KeyboardButton(text="🏆 المتصدرون"),
+            KeyboardButton(text="📜 القوانين")
+        ],
+        [
+            KeyboardButton(text="📞 الدعم")
+        ]
+    ],
+    resize_keyboard=True
 )
 
 
-def get_user(telegram_id):
-    response = (
-        supabase
-        .table("users")
-        .select("*")
-        .eq("telegram_id", telegram_id)
-        .execute()
+def task_keyboard(task_id, url):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🔗 فتح المهمة",
+                    url=url
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="📤 إرسال الإثبات",
+                    callback_data=f"proof_{task_id}"
+                )
+            ]
+        ]
     )
-
-    if response.data:
-        return response.data[0]
-
-    return None
-
-
-def add_user(user_id, username, first_name, referrer_id=None):
-
-    data = {
-    "telegram_id": user_id,
-    "username": username or "",
-    "first_name": first_name,
-    "points": 0,
-    "tickets": 0,
-    "referrals": 0,
-    "referred_by": referrer_id
-    }
-
-    supabase.table("users").insert(data).execute()
-
-
-def get_points(telegram_id):
-    response = (
-        supabase
-        .table("users")
-        .select("points")
-        .eq("telegram_id", telegram_id)
-        .execute()
+def review_keyboard(submission_id):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ قبول",
+                    callback_data=f"approve_{submission_id}"
+                ),
+                InlineKeyboardButton(
+                    text="❌ رفض",
+                    callback_data=f"reject_{submission_id}"
+                )
+            ]
+        ]
     )
-
-    if response.data:
-        return response.data[0]["points"]
-
-    return 0
-
-
-def get_tasks():
-    response = (
-        supabase
-        .table("tasks")
-        .select("*")
-        .eq("active", True)
-        .execute()
-    )
-
-    return response.data
-
-
-def complete_task(telegram_id, task_id, points):
-
-    check = (
-        supabase
-        .table("completed_tasks")
-        .select("*")
-        .eq("telegram_id", telegram_id)
-        .eq("task_id", task_id)
-        .execute()
-    )
-
-    if check.data:
-        return False
-
-
-    supabase.table("completed_tasks").insert({
-        "telegram_id": telegram_id,
-        "task_id": task_id
-    }).execute()
-
-
-    user = (
-        supabase
-        .table("users")
-        .select("points")
-        .eq("telegram_id", telegram_id)
-        .execute()
-    )
-
-    if not user.data:
-        return False
-
-    current_points = user.data[0]["points"]
-
-
-    supabase.table("users").update({
-        "points": current_points + points
-    }).eq("telegram_id", telegram_id).execute()
-
-
-    return True
-
-
-def create_submission(telegram_id, task_id, photo_id, points):
-
-    data = {
-        "telegram_id": telegram_id,
-        "task_id": task_id,
-        "photo_id": photo_id,
-        "status": "pending",
-        "points": points
-    }
-
-    response = (
-        supabase
-        .table("submissions")
-        .insert(data)
-        .execute()
-    )
-
-    if response.data:
-        return response.data[0]["id"]
-
-    return None
-
-
-
-# جلب إثبات من الإدارة
-def get_submission(submission_id):
-
-    response = (
-        supabase
-        .table("submissions")
-        .select("*")
-        .eq("id", submission_id)
-        .execute()
-    )
-
-    if response.data:
-        return response.data[0]
-
-    return None
-
-
-
-# قبول الإثبات وإضافة النقاط
-def approve_submission(submission_id):
-
-    submission = get_submission(submission_id)
-
-    if not submission:
-        return False
-
-    if submission["status"] != "pending":
-        return False
-
-
-    user = (
-        supabase
-        .table("users")
-        .select("points")
-        .eq("telegram_id", submission["telegram_id"])
-        .execute()
-    )
-
-
-    if user.data:
-
-        current_points = user.data[0]["points"]
-
-        supabase.table("users").update({
-            "points": current_points + submission["points"]
-        }).eq(
-            "telegram_id",
-            submission["telegram_id"]
-        ).execute()
-
-
-    supabase.table("submissions").update({
-        "status": "approved"
-    }).eq(
-        "id",
-        submission_id
-    ).execute()
-
-
-    return submission
-
-
-
-# رفض الإثبات
-def reject_submission(submission_id):
-
-    submission = get_submission(submission_id)
-
-    if not submission:
-        return False
-
-    if submission["status"] != "pending":
-        return False
-
-
-    supabase.table("submissions").update({
-        "status": "rejected"
-    }).eq(
-        "id",
-        submission_id
-    ).execute()
-
-
-    return submission
-def get_leaderboard():
-
-    response = (
-        supabase
-        .table("users")
-        .select("first_name, points")
-        .order("points", desc=True)
-        .limit(5)
-        .execute()
-    )
-
-    return response.data
-def get_referrals(telegram_id):
-
-    response = (
-        supabase
-        .table("users")
-        .select("referrals")
-        .eq("telegram_id", telegram_id)
-        .execute()
-    )
-
-    if response.data:
-        return response.data[0]["referrals"]
-
-    return 0
-
-
-def add_referral_reward(telegram_id, reward=10):
-
-    user = (
-        supabase
-        .table("users")
-        .select("points, referrals")
-        .eq("telegram_id", telegram_id)
-        .execute()
-    )
-
-    if not user.data:
-        return
-
-    current_points = user.data[0]["points"]
-    current_referrals = user.data[0]["referrals"]
-
-    supabase.table("users").update({
-        "points": current_points + reward,
-        "referrals": current_referrals + 1
-    }).eq(
-        "telegram_id",
-        telegram_id
-    ).execute()
-def set_referred_by(telegram_id, referred_by):
-
-    supabase.table("users").update({
-        "referred_by": referred_by
-    }).eq(
-        "telegram_id",
-        telegram_id
-    ).execute()
-
-
-def get_referred_by(telegram_id):
-
-    response = (
-        supabase
-        .table("users")
-        .select("referred_by")
-        .eq("telegram_id", telegram_id)
-        .execute()
-    )
-
-    if response.data:
-        return response.data[0]["referred_by"]
-
-    return None
-def add_points(telegram_id, points):
-    user = (
-        supabase
-        .table("users")
-        .select("points")
-        .eq("telegram_id", telegram_id)
-        .execute()
-    )
-
-    if not user.data:
-        return False
-
-    current_points = user.data[0]["points"]
-
-    supabase.table("users").update({
-        "points": current_points + points
-    }).eq(
-        "telegram_id",
-        telegram_id
-    ).execute()
-
-    return True
-
-
-def get_users_count():
-    response = (
-        supabase
-        .table("users")
-        .select("telegram_id")
-        .execute()
-    )
-
-    return len(response.data)
