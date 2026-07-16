@@ -1,10 +1,12 @@
-# إضافات البوت المدفوعة
+# ==========================
+# Premium Add-ons
+# ==========================
 
-# نظام الإحالة ودعوة الأصدقاء
-ENABLE_REFERRAL = False
+# نظام الإحالة
+REFERRAL_SYSTEM = False
 
 # نظام المسابقات وبطاقات السحب
-ENABLE_CONTESTS = False
+CONTEST_SYSTEM = False
 
-# نظام استبدال النقاط وزر المشاركة في السحب
-ENABLE_REWARDS = False
+# استبدال النقاط
+POINTS_EXCHANGE = False
