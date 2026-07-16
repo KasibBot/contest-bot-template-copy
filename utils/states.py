@@ -6,6 +6,9 @@ class SupportState(StatesGroup):
 class ReplyState(StatesGroup):
     waiting_for_reply = State()
 
+class TaskState(StatesGroup):
+    waiting_for_proof = State()
+    
 class ContestState(StatesGroup):
     waiting_for_title = State()
     waiting_for_prize = State()
